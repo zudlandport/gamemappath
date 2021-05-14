@@ -216,7 +216,7 @@ function do_map_basic(asqseen,adim,maxsteps) {
 function dist_to_color(thisdist, maxdist) {
  var perc = parseInt(thisdist) / parseInt(maxdist);
  var twofif = 220 - parseInt(180 * perc);
- /* we COULD return this, 'rgb('+cyan+',' +cyan+ ',' +cyan+ ')';
+ /* we COULD return this, 'rgb('+twofif+',' +twofif+ ',' +twofif+ ')';
 	but given that we're dumping hundreds of these on the page, I'd like to compress it to a 3 digit hex: */
  var gh = color256tosinglehex(twofif);
  return '#' + gh + gh + gh;
