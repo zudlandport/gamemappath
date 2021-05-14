@@ -13,6 +13,10 @@ It takes in the Start Position of the map, an array of treasures (whose Values a
 asquseen is no longer needed once the map generation is complete, so it is not part of moving the map into the game's database.  However we *do* want to be able to display the optimal walking path between the start point and each treasure in the future.
 
 ## How it works in general:
-For each treasure, it looks up its starting X,Y position in asqseen and sees the asqseen Distance of that square.  Then it looks at the adjacent squares (looking in each direction from its X,Y position) to find which one exists in asqseen AND is one step LESS Distant from the start position.  It records that as the next step to take back towards the start position\*.  It then repeats that process for each new square until it reaches the start position (or dead-ends / takes more steps than should exist, because asqseen is in some way broken or malformed).
+For each treasure, it looks up its starting X,Y position in asqseen and sees the asqseen Distance of that square.  Then it looks left, up, down and right from its X,Y position to find which of those adjacent squares exists in asqseen\* and is also one step LESS Distant from the start position.  If it finds such a square, it records that as the next step to take back towards the start position\**.  It then repeats that process for each new square until it reaches the start position (or dead-ends / takes more steps than should exist, because asqseen is in some way broken or malformed).
 
-\*:  because the answer we want is "how do I walk from the start to this treasure?", it records each decision "backwards":  for example if this treasure's distance from the starting point is listed as 95 steps, and our first step towards the start is to step Right, we report the 95th Step is Left, because that is what will take us from the 94th Step to the square we want to be on for the 95th.
+_
+\*:  if a coordinate does not exist in asqseen, there is no square at that coordinate.
+
+\**:  because the answer we want is "how do I walk from the start to this treasure?", it records each decision "backwards":  for example if this treasure's distance from the starting point is listed as 95 steps, and our first step from the treasure towards the start is to step Right, we report the 95th Step is Left, because that is what will take us from the 94th Step to the square we want to be on for the 95th Step.
+_
