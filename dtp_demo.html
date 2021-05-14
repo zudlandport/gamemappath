@@ -1,0 +1,295 @@
+<!-- 
+
+
+this page has enough infrastructure to let you demonstrate the Dungeon Treasure Path codesample in action. 
+
+
+--><html><head><title>Dungeon Treasure Path demo</title>
+
+<!-- This is the actual code sample: -->
+<script type="text/javascript" src="dungeontreasurepath.js"></script>
+
+
+<!--
+
+	for compactness / to help highlight the actual code sample and not this demo infrastructure,
+	everything else required is held on this page,
+	EXCEPT the test data, which is quite bulky.
+
+	though if you were actually building this demo for other purposes, all <script> and <style> tags would be in their own .js and .css files
+-->
+
+<!-- test data: -->
+<script type="text/javascript" src="dtp_testdata.js"></script>
+
+<style>
+body { background-color:#400; color:#5f5; font-family:Courier New, monospace, fixed,Courier, courier; margin:4px !important }
+h1 { font-size:16px; font-weight:bold; font-style:italic; background-color:#090; padding:0px 3px 0px 0px; margin:-4px }
+	h1 .dungeonname { background-color:#666; color:#0f0; padding-left:10px; padding-right:10px }
+h2 { font-size:24px }
+h3 { text-align:center }
+
+h1 div { display:inline; margin-left:56px }
+h1 em { font-weight:normal }
+h1 .onit { text-decoration:none; background-color:#666 }
+	h1 .onit a { color:#0df !important }
+
+h2 div { font-size:18px; font-weight:normal }
+
+A:link, A:visited, A:active, A:hover { color:#0ff }
+
+
+.debug { position:absolute; bottom:2%; right:2%; border:3px ridge #f00; background-color:#fff; color:#f00; font-size:11px; width:50%; height:300px; overflow:scroll }
+
+.boxsubbox div { float:left; margin-right:20px }
+.break { clear:both }
+
+
+.textbox ol { font-size:smaller }
+
+.gfxbox { margin:8px; border:3px ridge #fff; position:relative; background-color:#666 }
+.gfxbox div { position:absolute; background-color:#aaa; border:1px solid #000; width:6px; height:6px; font-size:0px }
+
+.gfxbox .stp { border-color:#6cc }
+</style>
+</head>
+<body onload="test_code(1)">
+<h1>Testing the Dungeon Start-to-Treasures Shortest Walking Path Code</h1>
+
+<div class="boxsubbox"><div><b>Examples:</b></div>
+	<div><a href="javascript:test_code(1)">1</a></div>
+	<div><a href="javascript:test_code(2)">2</a></div>
+	<div><a href="javascript:test_code(3)">3</a></div>
+	<div><a href="javascript:test_code(4)">4</a></div>
+	<div><a href="javascript:test_code(5)">5</a></div>
+	<div><a href="javascript:test_code(6)">6</a></div>
+	<div><a href="javascript:test_code(7)">7</a></div>
+	<div><a href="javascript:test_code(8)">8</a></div>
+</div>
+
+<div class="break"></div>
+
+<h2 id="whichtestlabel">Test:</h2>
+
+<div class="boxsubbox">
+	<div>Graphics Output:</div>
+	<div><a href="javascript:stepstop();">stop animation</a></div>
+	<div><a href="javascript:redo_last_test()">repeat step animation</a></div>
+</div>
+<div class="break"></div>
+<div id="boxdemogfx" class="gfxbox">(graphics will be shown here)</div>
+
+<div>Human-Readable Text Output:</div>
+<div id="boxdemotext" class="textbox"></div>
+
+
+
+<!--
+if you wanted to see the code samples' debugging information, you'd:
+1) uncomment this
+2) go into dungeontreasurepath.js and uncomment the call to debugmsg on line 108
+
+this isn't uncommented by default because I wanted dungeontreasurepath.js to be a stand-alone file.
+	<div id="boxdebug" class="debug"></div>
+-->
+
+
+<script type="text/javascript">
+
+var g_debugcount = 0;
+function debugmsg(msg) {
+ if (document.getElementById('boxdebug')!=undefined && msg!='') { 
+	 g_debugcount++;
+	 document.getElementById('boxdebug').innerHTML = '<div><b>' + g_debugcount +':</b> ' + msg + '</div>' + document.getElementById('boxdebug').innerHTML;
+ }
+}
+
+
+var g_runningtest = 0;
+
+var g_lasttestnum = '';
+
+function test_code(testnum) {
+ g_runningtest++;
+ g_lasttestnum = testnum;
+
+ /* sample data returned in this order:
+	[0] = astartxy = array(start x coordinate, start y coordinate)
+	[1] = alucres = array of "_"-delimited lists, 0th and 1st of which are treasure's X and Y coordinate
+	[2] = asqseen = keys are X_Y, values are # of steps to get to that square
+	[3] = adim = array(whole map's x-dimension/width, whole map's y-dimension/height)
+	[4] = maxsteps = largest # of steps to get to any square in the whole dungeon
+
+	([3] and [4] are not used by the function we're demonstrating, but are used to graphics-display the demo more easily / quickly)
+ */
+ var asampledata = test_the_code_sample_data(testnum);
+
+ document.getElementById('whichtestlabel').innerHTML = 'Example #' + testnum;
+
+ var alucrexbinpath = lucres_getbinpathfromdoor( asampledata[0], asampledata[1], asampledata[2] );
+
+ show_text(alucrexbinpath);
+
+ show_gfx(asampledata[2], asampledata[3], asampledata[4], asampledata[0], alucrexbinpath);
+
+ return alucrexbinpath;
+}
+
+
+function redo_last_test() {
+ test_code(g_lasttestnum);
+}
+
+function stepstop() {
+ g_runningtest++;
+}
+
+
+/* text description of results: */
+
+function show_text(alucrexbinpath) {
+ var t = '';
+ for (var l in alucrexbinpath) {
+	var al = l.split('_');
+	t+= '<li><b>' +al[5]+ ', at '+al[0]+'x' +al[1]+', ' + (alucrexbinpath[l].length / 2) + ' steps:</b> ' + retranslate_binary_to_steps(alucrexbinpath[l]) +'</li>';
+ }
+ document.getElementById('boxdemotext').innerHTML = '<ol>' + t + '</ol>';
+}
+
+function retranslate_binary_to_steps(binstep) {
+ var as = new Array();
+ var abtol = { '00':'L', '01':'U', '10':'R', '11':'D' }
+ for (var i=0; i<binstep.length; i+=2) {
+	var b = binstep.substr(i,2);
+	as[as.length] = abtol[b];
+ }
+ return as.join(', ');
+}
+
+
+
+/* gfx display of results: */
+
+function show_gfx(asqseen, adim, maxsteps, astartxy, alucrexbinpath) {
+ do_map_basic(asqseen,adim,maxsteps);
+ // now we've got squares whose ids are "gs#_#", let's do some initialization:
+ show_gfx_bgcolor(astartxy.join('_'), '#0f0');
+ // and for each lucre:
+ var a_allque = new Array();
+ for (var l in alucrexbinpath) {
+	var al = l.split('_');
+	show_gfx_bgcolor(al[0] + '_' + al[1], '#f99');
+	a_allque[ a_allque.length ] = show_gfx_que_walkpath(astartxy, al, alucrexbinpath[l]);
+ }
+ // display g_aque:
+ show_gfx_rollout_que(a_allque);
+}
+
+
+function do_map_basic(asqseen,adim,maxsteps) {
+ var gfxid = 'boxdemogfx';
+ var sqsize = 8;
+ var msg = '';
+ document.getElementById(gfxid).style.width = (parseInt(adim[0]) * sqsize) + 'px';
+ document.getElementById(gfxid).style.height = (parseInt(adim[1]) * sqsize) + 'px';
+ var d = '';
+ // since we're showing every distance many times, we only have to calculate it once:
+ var adxcol = new Array();
+ var axy = new Array();
+ var col = '';
+ for (var xy in asqseen) {
+	var axy = xy.split('_');
+	if (adxcol[ asqseen[xy] ] == undefined) {
+		adxcol[ asqseen[xy] ] = dist_to_color(asqseen[xy], maxsteps);
+	}
+	d += '<div id="gs' + xy
+		+'" style="left:' + (parseInt(axy[0]) * sqsize)
+		+ 'px; top:' + (parseInt(axy[1]) * sqsize)
+		+ 'px; background-color:'
+		+ adxcol[ asqseen[xy] ] + '"></div>';
+ }
+ document.getElementById(gfxid).innerHTML = d;
+
+ debugmsg(msg);
+}
+
+function dist_to_color(thisdist, maxdist) {
+ var perc = parseInt(thisdist) / parseInt(maxdist);
+ var twofif = 220 - parseInt(180 * perc);
+ /* we COULD return this, 'rgb('+cyan+',' +cyan+ ',' +cyan+ ')';
+	but given that we're dumping hundreds of these on the page, I'd like to compress it to a 3 digit hex: */
+ var gh = color256tosinglehex(twofif);
+ return '#' + gh + gh + gh;
+}
+
+function color256tosinglehex(twofif) {
+ var h = parseInt(twofif / 16);
+ if (h > 9) {
+	h = String.fromCharCode(55 + h);
+ }
+ return h;
+} 
+
+
+function show_gfx_que_walkpath(astartxy, alucre, binarypath) {
+ var acurposit = new Array(parseInt(astartxy[0]), parseInt(astartxy[1]));
+ var abinaryxmove = {
+	'00':new Array(-1,0),
+	'01':new Array(0,-1),
+	'10':new Array(1,0),
+	'11':new Array(0,1)
+ }
+ var errmsg = '';
+ var step = 0;
+ var aque = new Array();
+ for (var i=0; i<binarypath.length; i+=2) {
+	var amove = abinaryxmove[ binarypath.substr(i,2) ];
+	if (amove == undefined) { errmsg += '\nbad binary: ' + binarypath.substr(i,2) +' at position ' +i;	}
+	else {
+		acurposit[0] += amove[0];
+		acurposit[1] += amove[1];
+		aque[aque.length] = acurposit[0] + '_' + acurposit[1];
+	}
+ }
+ if (errmsg != '') { debugmsg('ERROR: ' + errmsg); }
+ return aque;
+}
+
+
+function show_gfx_rollout_que(aque) {
+ var slo = 100;
+ var msg = '';
+ for (var i=0; i<aque.length; i++) {
+	for (var j=0; j<aque[i].length; j++) {
+		setTimeout('show_gfx_sqclass("' + aque[i][j] + '", "stp", ' + g_runningtest + ')', slo * (j+1));
+	}
+ }
+}
+
+function show_gfx_bgcolor(xy, col) {
+ if (document.getElementById('gs' + xy) == undefined) {
+	debugmsg('show_gfx_bgcolor(' + xy + ', "' + col + '") couldn`t find ' + xy +'!!');
+ }
+ else {
+	document.getElementById('gs' + xy).style.backgroundColor = col;
+ }
+}
+
+function show_gfx_sqclass(xy, someclass, whichrunningtest) {
+ if (whichrunningtest != undefined && whichrunningtest != g_runningtest) {
+	return;
+ }
+ else {
+	 if (document.getElementById('gs' + xy) == undefined) {
+		debugmsg('show_gfx_sqclass(' + xy + ', "' + someclass + '") couldn`t find ' + xy +'!!');
+	 }
+	 else {
+		document.getElementById('gs' + xy).className = someclass;
+	 }
+ }
+}
+
+
+</script>
+
+</body></html>
