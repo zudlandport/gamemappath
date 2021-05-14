@@ -1,5 +1,5 @@
 # Game Map Path code sample:
-_dungeontreasurepath.js_ is a small part of the offline processes which create database data for procedurally-generated maze-like maps that are presented to the user online at https://dungeon.wyvernquest.com  The other files here are just enough framework to demonstrate that process:
+_dungeontreasurepath.js_ is a small part of the offline processes which create database data for procedurally-generated maze-like maps for this game: https://dungeon.wyvernquest.com  The other files in this repository are just enough framework to include sample input data and demonstrate that process's output:
 
 ![21_0514a Dungeon Path Demo img](https://user-images.githubusercontent.com/54818691/118282171-fe0b0e00-b49b-11eb-9754-06afa8fffbd5.png)
 
