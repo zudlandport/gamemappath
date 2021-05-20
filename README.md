@@ -19,3 +19,8 @@ For each treasure, it looks up its starting X,Y position in asqseen and sees the
 \*:  if an X,Y coordinate does not exist in asqseen, there's a wall there, and not a passable square.
 
 \*\*:  because the answer we want is "how do I walk from the start to this treasure?", it records each decision "backwards":  for example if this treasure's distance from the starting point is listed as 95 steps, and our first step from the treasure towards the start is to step Right, we report the 95th Step is Left, because that is what will take us from the 94th Step to the square we want to be on for the 95th Step.
+
+## It's also been rewritten in Python if you prefer
+_dungeontreasurepath_in_python.py_ is the same code rewritten in Python, with its own testing infrastructure, if you'd rather read Python than basic JavaScript.  It includes the same 8 demo maps to choose from, but since its output is command line / an ascii version of the map, it's not as cool-looking as the other demo (it doesn't show all walking paths expand at once in animated fashion).
+
+![21_0520a Dungeon Path Demo CLI img](https://user-images.githubusercontent.com/54818691/119039250-05da1f00-b982-11eb-9067-bc1932d4cc28.png)
