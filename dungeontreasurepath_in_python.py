@@ -44,7 +44,7 @@ def lucres_getbinpathfromdoor(lstartxy, llucres, dsqseen, showdebug):
 		prob = False
 		msg += '\nLucre ' + curjoin + ':  from ' + str(firstdist)
 		## lmove = []
-		movelist = '';
+		movelist = ''
 		while curdist > 0 and tries - 10 < firstdist:
 			curjoin = str(lcur[0]) + '_' + str(lcur[1])
 			thismsg = '\n' + curjoin + ', dist=' + str(curdist) +': '
@@ -71,7 +71,7 @@ def lucres_getbinpathfromdoor(lstartxy, llucres, dsqseen, showdebug):
 		if not prob:
 			msg += ' Success, ' + str(len(movelist)) + ' steps {' + movelist +'}' ## + lmove.join(', ')
 			dlucre_dirpaths[llucres[i]] = movelist
-		msg += '\n---';
+		msg += '\n---'
 	# end lucre-loop
 	
 	# now we want to translate 0-3 move directions into binary paths:
